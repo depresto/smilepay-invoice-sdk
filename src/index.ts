@@ -105,3 +105,5 @@ export type SmilePayRefundResult = {
   InvoiceNumber: string;
   AllowanceNumber: string;
 };
+
+export default SmilePayInvoiceClient
