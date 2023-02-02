@@ -1,9 +1,12 @@
 import fetch from "node-fetch";
-import { xml2json } from "./helper";
+import { xml2js } from "xml-js";
 import {
   SmilePayIssueInvoiceParams,
   SmilePayIssueInvoiceResult,
   SmilePayModifyInvoiceParams,
+  SmilePayModifyInvoiceResult,
+  SmilePayRefundParams,
+  SmilePayRefundResult,
 } from ".";
 
 class SmilePayInvoiceClient {
@@ -30,14 +33,14 @@ class SmilePayInvoiceClient {
    * 開立發票
    *
    * 發票資訊
-   * @param {SmilePayInvoiceParams} invoice 
+   * @param invoice.InvoiceNumber
    *  發票號碼 英文(2)+數字(8)共10碼 不可有符號
    *  營業人自行管理字軌時使用 如需了解,請與速買配聯繫
    * @param invoice.RandomNumber 
    *  隨機碼 4字元(數字)
    *  營業人自行管理字軌時使用 如需了解,請與速買配聯繫
    * @param invoice.InvoiceDate 
-   *  開立發票日期 (YYYY/MM/DD) / 若不填寫則用使用當下時間
+   *  開立發票日期 (YYYY/MM/DD)
    *  B2C發票僅能開立48小時之內 B2B發票僅能開立168小時之內
    * @param invoice.InvoiceTime 
    *  開立發票時間 (HH:MM:SS)
@@ -151,32 +154,31 @@ class SmilePayInvoiceClient {
 
    * @returns
    */
-  async issueInvoice(invoice: SmilePayIssueInvoiceParams) {
-    const params = new URLSearchParams();
-    params.append("Grvc", this.Grvc);
-    params.append("Verify_key", this.VerifyKey);
+  async issueInvoice(params: SmilePayIssueInvoiceParams) {
+    const searchParams = new URLSearchParams();
+    searchParams.append("Grvc", this.Grvc);
+    searchParams.append("Verify_key", this.VerifyKey);
 
-    // Use SmilePayIssueInvoiceParams to generate params
-    for (const key in invoice) {
-      const invoiceValue = invoice[key as keyof SmilePayIssueInvoiceParams];
-      if (invoiceValue) {
-        params.append(key, invoiceValue.toString());
+    for (const key in params) {
+      const invoiceValue = params[key as keyof SmilePayIssueInvoiceParams];
+
+      if (Array.isArray(invoiceValue)) {
+        searchParams.append(key, invoiceValue.join("|"));
+      } else if (invoiceValue !== undefined) {
+        searchParams.append(key, invoiceValue.toString());
       }
     }
 
     const response = await fetch(`${this.apiEndpoint}/SPEinvoice_Storage.asp`, {
       method: "POST",
-      body: params,
+      body: searchParams,
     });
 
     const data = await response.text();
-    let result = {};
-    try {
-      result = JSON.parse(xml2json(data, ""));
-    } catch (error) {
-      console.error(error);
-    }
-    return result as SmilePayIssueInvoiceResult;
+    return this.parseApiResult(
+      data,
+      "SmilePayEinvoice"
+    ) as SmilePayIssueInvoiceResult;
   }
 
   /**
@@ -205,7 +207,109 @@ class SmilePayInvoiceClient {
    *  如有【專案作廢核准文號】請填入
    * @param params.Remark 備註
    */
-  async modifyInvoice(params: SmilePayModifyInvoiceParams) {}
+  async modifyInvoice(params: SmilePayModifyInvoiceParams) {
+    const searchParams = new URLSearchParams();
+    searchParams.append("Grvc", this.Grvc);
+    searchParams.append("Verify_key", this.VerifyKey);
+
+    for (const key in params) {
+      const invoiceValue = params[key as keyof SmilePayModifyInvoiceParams];
+      if (invoiceValue !== undefined) {
+        searchParams.append(key, invoiceValue.toString());
+      }
+    }
+
+    const response = await fetch(
+      `${this.apiEndpoint}/SPEinvoice_Storage_Modify.asp`,
+      {
+        method: "POST",
+        body: searchParams,
+      }
+    );
+
+    const data = await response.text();
+    return this.parseApiResult(
+      data,
+      "SmilePayEinvoiceModify"
+    ) as SmilePayModifyInvoiceResult;
+  }
+
+  /**
+   * 開立折讓單
+   * 
+   * 折讓單資訊
+   * @param params.InvoiceNumber 發票號碼
+   * @param params.AllowanceNumber 折讓單號碼
+   * @param params.AllowanceDate 折讓單日期
+   * @param {1|2} params.AllowanceType 
+   *  1：買方開立折讓單
+      2：賣方開立折讓單(預設)
+
+   * 折讓明細
+   * 均以【　|　】(半形)符號區隔，並依照折讓明細排列，各項總數必須相同
+   * @param invoice.Description 
+   *  商品明細 請勿填入符號，每項品名最多256個字
+   * @param invoice.Quantity 
+   *  數量明細 純數字，必須大於0
+   * @param invoice.UnitPrice 
+   *  單價明細 純數字，必須大於0 透過單價含稅(UnitTAX)指定金額含稅或未稅價
+   * @param invoice.Unit 
+   *  單位明細 請勿填入符號，每項單位最多6個字
+   * @param invoice.Amount 
+   *  各明細總額 由每項【數量*單價】計算 純數字，可以小於0
+   * @param invoice.Tax
+   *  稅金 純數字
+   * @param invoice.TaxType
+   *  課稅別
+   *  1：應稅
+      2：零稅率
+      3：免稅
+      4：應稅(特種稅率)
+   */
+  async createRefund(params: SmilePayRefundParams) {
+    const searchParams = new URLSearchParams();
+    searchParams.append("Grvc", this.Grvc);
+    searchParams.append("Verify_key", this.VerifyKey);
+
+    for (const key in params) {
+      const invoiceValue = params[key as keyof SmilePayRefundParams];
+
+      if (Array.isArray(invoiceValue)) {
+        searchParams.append(key, invoiceValue.join("|"));
+      } else if (invoiceValue !== undefined) {
+        searchParams.append(key, invoiceValue.toString());
+      }
+    }
+
+    const response = await fetch(
+      `${this.apiEndpoint}/SPEinvoice_Storage_Allowance.asp`,
+      {
+        method: "POST",
+        body: searchParams,
+      }
+    );
+
+    const data = await response.text();
+    return this.parseApiResult(
+      data,
+      "SmilePayEinvoice"
+    ) as SmilePayRefundResult;
+  }
+
+  private parseApiResult(data: string, xmlDefaultKey: string) {
+    let result = {};
+    try {
+      const parsedData = xml2js(data, { compact: true }) as any;
+      result = Object.keys(parsedData[xmlDefaultKey]).reduce((key, obj) => {
+        key[obj] = parsedData[xmlDefaultKey][obj]["_text"] ?? "";
+        return key;
+      }, {} as { [key: string]: string });
+    } catch (error) {
+      console.error(error);
+    }
+
+    return result;
+  }
 }
 
 export default SmilePayInvoiceClient;

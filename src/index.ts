@@ -3,8 +3,8 @@ import SmilePayInvoiceClient from "./smilepay.invoice.client";
 export type SmilePayIssueInvoiceParams = {
   InvoiceNumber?: string;
   RandomNumber?: string;
-  InvoiceDate?: string;
-  InvoiceTime?: string;
+  InvoiceDate: string;
+  InvoiceTime: string;
   Intype: "07" | "08";
   TaxType: 1 | 2 | 3 | 4 | 9;
   BuyerRemark?: 1 | 2 | 3 | 4;
@@ -44,26 +44,64 @@ export type SmilePayIssueInvoiceParams = {
 };
 
 export type SmilePayIssueInvoiceResult = {
-  Status: string
-  Desc: string
-  orderno?: string
-  data_id?: string
-  InvoiceNumber: string
-  RandomNumber: string
-  InvoiceDate: string
-  InvoiceTime: string
-  InvoiceType: string
-  CarrierID?: string
+  Status: string;
+  Desc: string;
+  Grvc: string;
+  orderno: string;
+  data_id: string;
+  InvoiceNumber: string;
+  RandomNumber: string;
+  InvoiceDate: string;
+  InvoiceTime: string;
+  InvoiceType: string;
+  CarrierID: string;
 };
 
 export type SmilePayModifyInvoiceParams = {
   InvoiceNumber?: string;
-  InvoiceDate?:  string;
+  InvoiceDate?: string;
   AllowanceNumber?: string;
   AllowanceDate?: string;
-  types: 'Cancel' | 'Void' | 'Reject' | 'CancelAllowance' | 'StopProcessing';
-  ReturnTaxDocumentNumber?: string
-  VoidReason?: string
-  RejectReason?: string
-  Remark?: string
-}
+  types: "Cancel" | "Void" | "Reject" | "CancelAllowance" | "StopProcessing";
+  CancelReason?: string;
+  ReturnTaxDocumentNumber?: string;
+  VoidReason?: string;
+  RejectReason?: string;
+  Remark?: string;
+};
+export type SmilePayModifyInvoiceResult = {
+  Status: string;
+  Desc: string;
+  Types: string;
+  Grvc: string;
+  InvoiceNumber?: string;
+  AllowanceNumber?: string;
+  CancelDate?: string;
+  CancelTime?: string;
+  VoidDate?: string;
+  VoidTime?: string;
+  RejectDate?: string;
+  RejectTime?: string;
+};
+
+export type SmilePayRefundParams = {
+  InvoiceNumber: string;
+  AllowanceNumber?: string;
+  AllowanceDate?: string;
+  AllowanceType?: 1 | 2;
+
+  Description: string[];
+  Quantity: number[];
+  UnitPrice: number[];
+  Unit?: string[];
+  Amount: number[];
+  Tax: number[];
+  TaxType: 1 | 2 | 3 | 4;
+};
+export type SmilePayRefundResult = {
+  Status: string;
+  Desc: string;
+  Grvc: string;
+  InvoiceNumber: string;
+  AllowanceNumber: string;
+};
