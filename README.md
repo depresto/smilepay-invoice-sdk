@@ -1,4 +1,4 @@
-# 速買配 SmilePay 發票 SDK
+# 速買配 SmilePay 發票 SDK [![CI](https://github.com/depresto/smilepay-invoice-sdk/workflows/CI/badge.svg)](https://github.com/depresto/smilepay-invoice-sdk/actions?query=workflow%3ACI) [![codecov](https://badgen.net/codecov/c/github/depresto/smilepay-invoice-sdk)](https://codecov.io/gh/depresto/smilepay-invoice-sdk)
 
 提供 開立發票 / 開立折讓單 / 發票&折讓單-作廢/註銷/退回功能 等功能
 
