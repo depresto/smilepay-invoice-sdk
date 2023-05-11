@@ -1,6 +1,6 @@
 {
   "name": "smilepay-invoice-sdk",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "速買配SmilePay發票SDK",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
@@ -9,10 +9,14 @@
   ],
   "scripts": {
     "build": "rm -rf build && tsc",
-    "npm-publish": "pnpm build && pnpm publish --access public",
+    "deploy-npm": "pnpm build && pnpm publish --access public",
     "test": "jest"
   },
-  "keywords": [],
+  "keywords": [
+    "smilepay",
+    "invoice",
+    "sdk"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
