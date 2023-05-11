@@ -1,6 +1,6 @@
 import SmilePayInvoiceClient from "./smilepay.invoice.client";
 
-export type SmilePayIssueInvoiceParams = {
+export type IssueInvoiceParams = {
   InvoiceNumber?: string;
   RandomNumber?: string;
   InvoiceDate: string;
@@ -43,7 +43,7 @@ export type SmilePayIssueInvoiceParams = {
   CarrierID2?: string;
 };
 
-export type SmilePayIssueInvoiceResult = {
+export type IssueInvoiceResult = {
   Status: string;
   Desc: string;
   Grvc: string;
@@ -57,7 +57,7 @@ export type SmilePayIssueInvoiceResult = {
   CarrierID: string;
 };
 
-export type SmilePayModifyInvoiceParams = {
+export type ModifyInvoiceParams = {
   InvoiceNumber?: string;
   InvoiceDate?: string;
   AllowanceNumber?: string;
@@ -69,7 +69,7 @@ export type SmilePayModifyInvoiceParams = {
   RejectReason?: string;
   Remark?: string;
 };
-export type SmilePayModifyInvoiceResult = {
+export type ModifyInvoiceResult = {
   Status: string;
   Desc: string;
   Types: string;
@@ -84,7 +84,7 @@ export type SmilePayModifyInvoiceResult = {
   RejectTime?: string;
 };
 
-export type SmilePayRefundParams = {
+export type IssueAllowanceParams = {
   InvoiceNumber: string;
   AllowanceNumber?: string;
   AllowanceDate?: string;
@@ -98,7 +98,7 @@ export type SmilePayRefundParams = {
   Tax: number[];
   TaxType: 1 | 2 | 3 | 4;
 };
-export type SmilePayRefundResult = {
+export type IssueAllowanceResult = {
   Status: string;
   Desc: string;
   Grvc: string;

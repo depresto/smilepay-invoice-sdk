@@ -127,7 +127,7 @@ describe("createRefund", () => {
       InvoiceTime: "15:33:33",
     });
 
-    const result = await client.createRefund({
+    const result = await client.issueAllowance({
       InvoiceNumber: invoiceResult.InvoiceNumber,
       Description: ["商品1", "商品2"],
       Quantity: [5, 8],

@@ -1,12 +1,12 @@
 import fetch from "node-fetch";
 import { xml2js } from "xml-js";
 import {
-  SmilePayIssueInvoiceParams,
-  SmilePayIssueInvoiceResult,
-  SmilePayModifyInvoiceParams,
-  SmilePayModifyInvoiceResult,
-  SmilePayRefundParams,
-  SmilePayRefundResult,
+  IssueInvoiceParams,
+  IssueInvoiceResult,
+  ModifyInvoiceParams,
+  ModifyInvoiceResult,
+  IssueAllowanceParams,
+  IssueAllowanceResult,
 } from ".";
 
 class SmilePayInvoiceClient {
@@ -154,13 +154,13 @@ class SmilePayInvoiceClient {
 
    * @returns
    */
-  async issueInvoice(params: SmilePayIssueInvoiceParams) {
+  async issueInvoice(params: IssueInvoiceParams) {
     const searchParams = new URLSearchParams();
     searchParams.append("Grvc", this.Grvc);
     searchParams.append("Verify_key", this.VerifyKey);
 
     for (const key in params) {
-      const invoiceValue = params[key as keyof SmilePayIssueInvoiceParams];
+      const invoiceValue = params[key as keyof IssueInvoiceParams];
 
       if (Array.isArray(invoiceValue)) {
         searchParams.append(key, invoiceValue.join("|"));
@@ -175,10 +175,7 @@ class SmilePayInvoiceClient {
     });
 
     const data = await response.text();
-    return this.parseApiResult(
-      data,
-      "SmilePayEinvoice"
-    ) as SmilePayIssueInvoiceResult;
+    return this.parseApiResult(data, "SmilePayEinvoice") as IssueInvoiceResult;
   }
 
   /**
@@ -207,13 +204,13 @@ class SmilePayInvoiceClient {
    *  如有【專案作廢核准文號】請填入
    * @param params.Remark 備註
    */
-  async modifyInvoice(params: SmilePayModifyInvoiceParams) {
+  async modifyInvoice(params: ModifyInvoiceParams) {
     const searchParams = new URLSearchParams();
     searchParams.append("Grvc", this.Grvc);
     searchParams.append("Verify_key", this.VerifyKey);
 
     for (const key in params) {
-      const invoiceValue = params[key as keyof SmilePayModifyInvoiceParams];
+      const invoiceValue = params[key as keyof ModifyInvoiceParams];
       if (invoiceValue !== undefined) {
         searchParams.append(key, invoiceValue.toString());
       }
@@ -231,7 +228,7 @@ class SmilePayInvoiceClient {
     return this.parseApiResult(
       data,
       "SmilePayEinvoiceModify"
-    ) as SmilePayModifyInvoiceResult;
+    ) as ModifyInvoiceResult;
   }
 
   /**
@@ -266,13 +263,13 @@ class SmilePayInvoiceClient {
       3：免稅
       4：應稅(特種稅率)
    */
-  async createRefund(params: SmilePayRefundParams) {
+  async issueAllowance(params: IssueAllowanceParams) {
     const searchParams = new URLSearchParams();
     searchParams.append("Grvc", this.Grvc);
     searchParams.append("Verify_key", this.VerifyKey);
 
     for (const key in params) {
-      const invoiceValue = params[key as keyof SmilePayRefundParams];
+      const invoiceValue = params[key as keyof IssueAllowanceParams];
 
       if (Array.isArray(invoiceValue)) {
         searchParams.append(key, invoiceValue.join("|"));
@@ -293,7 +290,7 @@ class SmilePayInvoiceClient {
     return this.parseApiResult(
       data,
       "SmilePayEinvoice"
-    ) as SmilePayRefundResult;
+    ) as IssueAllowanceResult;
   }
 
   private parseApiResult(data: string, xmlDefaultKey: string) {

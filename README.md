@@ -72,7 +72,7 @@ const cancelResult = await client.modifyInvoice({
 });
 
 // 開立折讓單
-const refundResult = await client.createRefund({
+const allowanceResult = await client.issueAllowance({
   InvoiceNumber: b2bResult.InvoiceNumber,
   Description: ["商品1", "商品2"],
   Quantity: [5, 8],
