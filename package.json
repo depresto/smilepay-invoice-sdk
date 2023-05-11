@@ -1,9 +1,13 @@
 {
   "name": "smilepay-invoice-sdk",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "速買配SmilePay發票SDK",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/depresto/smilepay-invoice-sdk"
+  },
   "files": [
     "build"
   ],
